@@ -62,7 +62,7 @@ nfsLan.addInterface(nfsServer.addInterface())
 nfsBS = nfsServer.Blockstore("nfsBS", nfsDirectory)
 nfsBS.size = params.nfsSize
 # Initialization script for the server
-nfsServer.addService(pg.Execute(shell="sh", command="sudo /proj/testbed/stoller/nfs-server.sh"))
+nfsServer.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
 
 # The NFS clients, also attached to the NFS lan.
 for i in range(1, params.clientCount+1):
