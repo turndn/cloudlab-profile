@@ -70,7 +70,7 @@ for i in range(1, params.clientCount+1):
     node.disk_image = params.osImage
     nfsLan.addInterface(node.addInterface())
     # Initialization script for the clients
-    node.addService(pg.Execute(shell="sh", command="sudo /proj/testbed/stoller/nfs-client.sh"))
+    node.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
     pass
 
 # Print the RSpec to the enclosing page.
