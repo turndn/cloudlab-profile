@@ -52,6 +52,8 @@ if [ "$OS" = "Linux" ]; then
 	echo ""
 	echo "Installing NFS packages"
 	apt-get --assume-yes install nfs-kernel-server nfs-common
+	# make sure the server is not running til we fix up exports
+	service nfs-kernel-server stop
     fi
 fi
 
@@ -142,12 +144,6 @@ chmod +x $HOOKNAME
 echo ""
 
 if [ "$OS" = "Linux" ]; then
-    # The install above starts the server.
-    # Stop it since we have to restart rpcbind with new options.
-    echo "Stopping NFS services"
-    service nfs-kernel-server stop
-    sleep 1
-
     echo "Restarting rpcbind"
     service rpcbind stop
     sleep 1

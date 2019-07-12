@@ -79,8 +79,15 @@ fi
 # Run the mount. It is a background mount, so will keep trying until
 # the server is up, which it already should be, 
 #
+echo ""
+echo "Mounting $NFSSERVER:$NFSDIR ..."
 if ! mount -t nfs -o $mntopts $NFSSERVER:$NFSDIR $NFSDIR; then
-    exit 1
+    echo 'WARNING: Background mount failed?! Trying again in 5 seconds ...'
+    sleep 5
+    if ! mount -t nfs -o $mntopts $NFSSERVER:$NFSDIR $NFSDIR; then
+	echo 'FATAL: Background mount failed?! Giving up.'
+	exit 1
+    fi
 fi
 
 #
@@ -99,6 +106,8 @@ else
     done
 fi
 
+echo ""
+echo "Mount of $NFSSERVER:$NFSDIR is ready."
 exit 0
 
 
