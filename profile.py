@@ -19,12 +19,22 @@ pc = portal.Context()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Only Ubuntu images supported.
+# Client image list
 imageList = [
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU20-64-STD', 'UBUNTU 20.04'),
     ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU18-64-STD', 'UBUNTU 18.04'),
-    ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU16-64-STD', 'UBUNTU 16.04'),
-    ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU14-64-STD', 'UBUNTU 14.04'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//CENTOS8-64-STD', 'CENTOS 8'),
     ('urn:publicid:IDN+emulab.net+image+emulab-ops//CENTOS7-64-STD', 'CENTOS 7'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//FBSD131-64-STD', 'FreeBSD 13.1'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//FBSD123-64-STD', 'FreeBSD 12.3'),
+]
+
+# Server image list, not tested with CentOS
+imageList2 = [
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU20-64-STD', 'UBUNTU 20.04'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU18-64-STD', 'UBUNTU 18.04'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//FBSD131-64-STD', 'FreeBSD 13.1'),
+    ('urn:publicid:IDN+emulab.net+image+emulab-ops//FBSD123-64-STD', 'FreeBSD 12.3'),
 ]
 
 # Do not change these unless you change the setup scripts too.
@@ -36,9 +46,13 @@ nfsDirectory  = "/nfs"
 pc.defineParameter("clientCount", "Number of NFS clients",
                    portal.ParameterType.INTEGER, 2)
 
-pc.defineParameter("osImage", "Select OS image",
+pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
-                   imageList[2], imageList)
+                   imageList[0], imageList)
+
+pc.defineParameter("osServerImage", "Select OS image for server",
+                   portal.ParameterType.IMAGE,
+                   imageList2[0], imageList2)
 
 pc.defineParameter("nfsSize", "Size of NFS Storage",
                    portal.ParameterType.STRING, "200GB",
@@ -55,7 +69,7 @@ nfsLan.link_multiplexing = True
 
 # The NFS server.
 nfsServer = request.RawPC(nfsServerName)
-nfsServer.disk_image = params.osImage
+nfsServer.disk_image = params.osServerImage
 # Attach server to lan.
 nfsLan.addInterface(nfsServer.addInterface())
 # Storage file system goes into a local (ephemeral) blockstore.
