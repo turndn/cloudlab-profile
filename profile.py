@@ -72,7 +72,7 @@ nfsServer.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repos
 # The NFS client. (first and second servers)
 class Client:
     def __init__(self, **kwargs):
-        self.node = kwargs.get("name", "")
+        self.node = kwargs.get("node", "")
         self.hardware_type = kwargs.get("hardware_type", "")
         self.iface_name = kwargs.get("iface_name", "")
         self.ipaddr = kwargs.get("ipaddr", "")
