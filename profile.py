@@ -61,6 +61,7 @@ ifaces = []
 # The NFS server.
 nfsServer = request.RawPC(nfsServerName)
 nfsServer.disk_image = params.osImage
+nfsServer.hardware_type = params.firstServerType
 nfsServer.routable_control_ip = True
 ifaces.append(nfsServer.addInterface('interface-0', pg.IPv4Address('192.168.6.2', '255.255.255.0')))
 # Storage file system goes into a local (ephemeral) blockstore.
