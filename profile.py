@@ -73,7 +73,7 @@ nfsClient = request.RawPC("client")
 nfsClient.disk_image = params.osImage
 nfsClient.hardware_type = params.secondServerType
 nfsClient.routable_control_ip = True
-iface1 = nfsServer.addInterface('interface-1', pg.IPv4Address('192.168.6.3', '255.255.255.0'))
+iface1 = nfsClient.addInterface('interface-1', pg.IPv4Address('192.168.6.3', '255.255.255.0'))
 nfsClient.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
 
 # Attach server to lan.
