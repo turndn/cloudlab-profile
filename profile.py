@@ -33,10 +33,10 @@ nfsLanName    = "nfsLan"
 nfsDirectory  = "/nfs"
 
 pc.defineParameter("firstServerType", "First server type",
-                   portal.ParameterType.STRING, 'd710')
+                   portal.ParameterType.NODETYPE, '')
 
 pc.defineParameter("secondServerType", "Second server type",
-                   portal.ParameterType.STRING, 'd710')
+                   portal.ParameterType.NODETYPE, '')
 
 pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
@@ -56,29 +56,51 @@ nfsLan.best_effort       = True
 nfsLan.vlan_tagging      = True
 nfsLan.link_multiplexing = True
 
-# The NFS server. (first server)
+ifaces = []
+
+# The NFS server.
 nfsServer = request.RawPC(nfsServerName)
 nfsServer.disk_image = params.osImage
-nfsServer.hardware_type = params.firstServerType
 nfsServer.routable_control_ip = True
-iface0 = nfsServer.addInterface('interface-0', pg.IPv4Address('192.168.6.2', '255.255.255.0'))
+ifaces.append(nfsServer.addInterface('interface-0', pg.IPv4Address('192.168.6.2', '255.255.255.0')))
 # Storage file system goes into a local (ephemeral) blockstore.
 nfsBS = nfsServer.Blockstore("nfsBS", nfsDirectory)
 nfsBS.size = params.nfsSize
 # Initialization script for the server
 nfsServer.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
 
-# The NFS client. (second server)
-nfsClient = request.RawPC("client")
-nfsClient.disk_image = params.osImage
-nfsClient.hardware_type = params.secondServerType
-nfsClient.routable_control_ip = True
-iface1 = nfsClient.addInterface('interface-1', pg.IPv4Address('192.168.6.3', '255.255.255.0'))
-nfsClient.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
+# The NFS client. (first and second servers)
+class Client:
+    def __init__(self, **kwargs):
+        self.node = kwargs.get("name", "")
+        self.hardware_type = kwargs.get("hardware_type", "")
+        self.iface_name = kwargs.get("iface_name", "")
+        self.ipaddr = kwargs.get("ipaddr", "")
+
+clients = []
+
+clients.append(Client(node="node1",
+                      hardware_types=params.firstServerType,
+                      iface_name="interface-1",
+                      ipaddr="192.168.6.3"))
+
+clients.append(Client(node="node2",
+                      hardware_types=params.secondServerType,
+                      iface_name="interface-2",
+                      ipaddr="192.168.6.4"))
+
+for client_config in clients:
+    client = request.RawPC(client_config.node)
+    client.disk_image = params.osImage
+    client.hardware_type = client_config.hardware_type
+    client.routable_control_ip = True
+    ifaces.append(client.addInterface(client_config.iface_name,
+                                      pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
+    client.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
 
 # Attach server to lan.
-nfsLan.addInterface(iface0)
-nfsLan.addInterface(iface1)
+for iface in ifaces:
+    nfsLan.addInterface(iface)
 
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
