@@ -24,7 +24,7 @@ request = pc.makeRequestRSpec()
 
 # Image list
 imageList = [
-    ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
+    ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.experiment', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
 ]
 
 # Do not change these unless you change the setup scripts too.
