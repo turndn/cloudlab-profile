@@ -51,7 +51,6 @@ params = pc.bindParameters()
 
 # The NFS network. All these options are required.
 nfsLan = request.LAN(nfsLanName)
-nfsLan.bandwidth = 100000
 nfsLan.best_effort       = True
 nfsLan.vlan_tagging      = True
 nfsLan.link_multiplexing = True
