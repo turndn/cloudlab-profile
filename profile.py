@@ -27,11 +27,6 @@ imageList = [
     ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.experiment', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
 ]
 
-# Do not change these unless you change the setup scripts too.
-nfsServerName = "nfs"
-nfsLanName    = "nfsLan"
-nfsDirectory  = "/nfs"
-
 pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
                    imageList[0], imageList)
@@ -69,7 +64,6 @@ for client_config in clients:
     client = request.RawPC(client_config.node)
     client.disk_image = params.osImage
     client.hardware_type = client_config.hardware_type
-    client.routable_control_ip = True
     ifaces.append(client.addInterface(client_config.iface_name,
                                       pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
 
