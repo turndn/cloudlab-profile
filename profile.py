@@ -46,11 +46,15 @@ pc.defineParameter("nfsSize", "Size of NFS Storage",
                    portal.ParameterType.STRING, "10GB",
                    longDescription="Size of disk partition to allocate on NFS server")
 
+pc.defineParameter("bandwidth", "bandwidth in Kbps",
+                   portal.ParameterType.INT, 100000)
+
 # Always need this when using parameters
 params = pc.bindParameters()
 
 # The NFS network. All these options are required.
 nfsLan = request.LAN(nfsLanName)
+nfsLan.bandwidth = params.bandwidth
 nfsLan.best_effort       = True
 nfsLan.vlan_tagging      = True
 nfsLan.link_multiplexing = True
