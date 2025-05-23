@@ -32,12 +32,6 @@ nfsServerName = "nfs"
 nfsLanName    = "nfsLan"
 nfsDirectory  = "/nfs"
 
-pc.defineParameter("firstServerType", "First server type",
-                   portal.ParameterType.NODETYPE, '')
-
-pc.defineParameter("secondServerType", "Second server type",
-                   portal.ParameterType.NODETYPE, '')
-
 pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
                    imageList[0], imageList)
@@ -82,15 +76,13 @@ class Client:
 
 clients = []
 
-clients.append(Client(node="node1",
-                      hardware_type=params.firstServerType,
-                      iface_name="interface-1",
-                      ipaddr="192.168.6.3"))
+nodes = ["d430", "d710", "d820"]
 
-clients.append(Client(node="node2",
-                      hardware_type=params.secondServerType,
-                      iface_name="interface-2",
-                      ipaddr="192.168.6.4"))
+for i, node in enumerate(nodes):
+    c = Client(node=node,
+               hardware_type=node,
+               iface_name=f"interface-{i + 1}",
+               ipaddr=f"192.168.6.{i + 3}")
 
 for client_config in clients:
     client = request.RawPC(client_config.node)
