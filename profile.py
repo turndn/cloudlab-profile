@@ -31,14 +31,8 @@ pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
                    imageList[0], imageList)
 
-pc.defineParameter("bandwidth", "bandwidth in Kbps",
-                   portal.ParameterType.BANDWIDTH , 100000)
-
 # Always need this when using parameters
 params = pc.bindParameters()
-
-lan = request.LAN("lan")
-lan.bandwidth = params.bandwidth
 
 ifaces = []
 
@@ -56,7 +50,7 @@ nodes = ["c220g1", "c220g2", "d430"]
 for i, node in enumerate(nodes):
     c = Client(node=node,
                hardware_type=node,
-               iface_name="interface-{}".format(i + 1),
+               iface_name="eth1",
                ipaddr="192.168.6.{}".format(i + 3))
     clients.append(c)
 
@@ -66,6 +60,9 @@ for client_config in clients:
     client.hardware_type = client_config.hardware_type
     ifaces.append(client.addInterface(client_config.iface_name,
                                       pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
+
+lan = request.LAN("lan")
+lan.bandwidth = 100000
 
 # Attach server to lan.
 for iface in ifaces:
