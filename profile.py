@@ -15,15 +15,13 @@ pc = portal.Context()
 request = pc.makeRequestRSpec()
 
 # Variable number of nodes at two sites.
-pc.defineParameter("X", "Number of Nodes at Site One", portal.ParameterType.INTEGER, 2)
+pc.defineParameter("X", "Number of Nodes at Site One", portal.ParameterType.INTEGER, 1)
 pc.defineParameter("Y", "Number of Nodes at Site Two", portal.ParameterType.INTEGER, 2)
 
 # Retrieve the values the user specifies during instantiation.
 params = pc.bindParameters()
 
 # Check parameter validity.
-if params.X < 2:
-    pc.reportError(portal.ParameterError("You must choose at least 2 nodes at Site One"))
 if params.Y < 2:
     pc.reportError(portal.ParameterError("You must choose at least 2 nodes at Site Two"))
 
