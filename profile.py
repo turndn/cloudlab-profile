@@ -1,12 +1,20 @@
-"""This profile create lan that spans two clusters. Note that you must a bandwidth on your lan for this to work.
+"""This profile sets up a simple environment for migration experiment with KVM.
+Two servers can share a VM image through NFS. To do so, one server acts as NFS
+server and the other one acts as NFS client. The NFS server uses *temporary*
+storage on one of your nodes, the contents will be lost when you terminate your
+experiment. We have a different profile available if you need your NFS server
+data to persist after your experiment is terminated. 
 
 Instructions:
-Click on any node in the topology and choose the `shell` menu item. When your shell window appears, use `ping` to test the link."""
+Click on any node in the topology and choose the `shell` menu item. Your shared
+NFS directory is mounted at `/nfs` on all nodes."""
 
 # Import the Portal object.
 import geni.portal as portal
 # Import the ProtoGENI library.
 import geni.rspec.pg as pg
+# Import the Emulab specific extensions.
+import geni.rspec.emulab as emulab
 
 # Create a portal context.
 pc = portal.Context()
@@ -14,57 +22,50 @@ pc = portal.Context()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Variable number of nodes at two sites.
-pc.defineParameter("X", "Number of Nodes at Site One", portal.ParameterType.INTEGER, 1)
-pc.defineParameter("Y", "Number of Nodes at Site Two", portal.ParameterType.INTEGER, 2)
+# Image list
+imageList = [
+    ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.experiment', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
+]
 
-# Retrieve the values the user specifies during instantiation.
+pc.defineParameter("osImage", "Select OS image for clients",
+                   portal.ParameterType.IMAGE,
+                   imageList[0], imageList)
+
+# Always need this when using parameters
 params = pc.bindParameters()
 
-# Check parameter validity.
-if params.Y < 2:
-    pc.reportError(portal.ParameterError("You must choose at least 2 nodes at Site Two"))
-
-# Count for node name.
-counter = 0;
-
-# ifaces. 
 ifaces = []
 
-# Nodes at Site One.
-for i in range(params.X):
-    node = request.RawPC("node" + str(counter))
-    # Assign to Site One.
-    node.Site("Site1")
-    # Create iface and assign IP
-    iface = node.addInterface("eth1")
-    # Specify the IPv4 address
-    iface.addAddress(pg.IPv4Address("192.168.1." + str(counter + 1), "255.255.255.0"))
-    ifaces.append(iface)
-    counter = counter + 1
-    pass
+class Client:
+    def __init__(self, **kwargs):
+        self.node = kwargs.get("node", "")
+        self.hardware_type = kwargs.get("hardware_type", "")
+        self.iface_name = kwargs.get("iface_name", "")
+        self.ipaddr = kwargs.get("ipaddr", "")
 
-# Nodes at Site Two
-for i in range(params.Y):
-    node = request.RawPC("node" + str(counter))
-    # Assign to Site Two
-    node.Site("Site2")
-    # Create iface and assign IP
-    iface = node.addInterface("eth1")
-    # Specify the IPv4 address
-    iface.addAddress(pg.IPv4Address("192.168.1." + str(counter + 1), "255.255.255.0"))
-    # And add to the lan.
-    ifaces.append(iface)
-    counter = counter + 1
-    pass
+clients = []
 
-# Now add the link to the rspec. 
+nodes = ["d430", "m510"]
+
+for i, node in enumerate(nodes):
+    c = Client(node=node,
+               hardware_type=node,
+               iface_name="eth1",
+               ipaddr="192.168.6.{}".format(i + 3))
+    clients.append(c)
+
+for client_config in clients:
+    client = request.RawPC(client_config.node)
+    client.disk_image = params.osImage
+    client.hardware_type = client_config.hardware_type
+    client.routable_control_ip = True
+    ifaces.append(client.addInterface(client_config.iface_name,
+                                      pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
+
 lan = request.LAN("lan")
-
-# Must provide a bandwidth. BW is in Kbps
 lan.bandwidth = 100000
 
-# Add interfaces to lan
+# Attach server to lan.
 for iface in ifaces:
     lan.addInterface(iface)
 
