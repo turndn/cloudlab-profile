@@ -83,6 +83,7 @@ for i, node in enumerate(nodes):
                hardware_type=node,
                iface_name="interface-{}".format(i + 1),
                ipaddr="192.168.6.{}".format(i + 3))
+    clients.append(c)
 
 for client_config in clients:
     client = request.RawPC(client_config.node)
