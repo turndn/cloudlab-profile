@@ -24,7 +24,7 @@ request = pc.makeRequestRSpec()
 
 # Image list
 imageList = [
-    ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.experiment', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
+    ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.nodisk', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
 ]
 
 pc.defineParameter("osImage", "Select OS image for clients",
