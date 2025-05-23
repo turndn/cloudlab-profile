@@ -41,7 +41,7 @@ pc.defineParameter("nfsSize", "Size of NFS Storage",
                    longDescription="Size of disk partition to allocate on NFS server")
 
 pc.defineParameter("bandwidth", "bandwidth in Kbps",
-                   portal.ParameterType.INT, 100000)
+                   portal.ParameterType.BANDWIDTH , 100000)
 
 # Always need this when using parameters
 params = pc.bindParameters()
