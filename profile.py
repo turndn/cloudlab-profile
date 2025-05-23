@@ -27,18 +27,9 @@ imageList = [
     ('urn:publicid:IDN+emulab.net+image+DLOCK:migration-kvm.experiment', 'UBUNTU 24.04 (kvm-qemu-libvirt)'),
 ]
 
-# Do not change these unless you change the setup scripts too.
-nfsServerName = "nfs"
-nfsLanName    = "nfsLan"
-nfsDirectory  = "/nfs"
-
 pc.defineParameter("osImage", "Select OS image for clients",
                    portal.ParameterType.IMAGE,
                    imageList[0], imageList)
-
-pc.defineParameter("nfsSize", "Size of NFS Storage",
-                   portal.ParameterType.STRING, "10GB",
-                   longDescription="Size of disk partition to allocate on NFS server")
 
 pc.defineParameter("bandwidth", "bandwidth in Kbps",
                    portal.ParameterType.BANDWIDTH , 100000)
@@ -46,27 +37,8 @@ pc.defineParameter("bandwidth", "bandwidth in Kbps",
 # Always need this when using parameters
 params = pc.bindParameters()
 
-# The NFS network. All these options are required.
-nfsLan = request.LAN(nfsLanName)
-nfsLan.bandwidth = params.bandwidth
-nfsLan.best_effort       = True
-nfsLan.vlan_tagging      = True
-nfsLan.link_multiplexing = True
-
 ifaces = []
 
-# The NFS server.
-nfsServer = request.RawPC(nfsServerName)
-nfsServer.disk_image = params.osImage
-nfsServer.routable_control_ip = True
-ifaces.append(nfsServer.addInterface('interface-0', pg.IPv4Address('192.168.6.2', '255.255.255.0')))
-# Storage file system goes into a local (ephemeral) blockstore.
-nfsBS = nfsServer.Blockstore("nfsBS", nfsDirectory)
-nfsBS.size = params.nfsSize
-# Initialization script for the server
-nfsServer.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
-
-# The NFS client. (first and second servers)
 class Client:
     def __init__(self, **kwargs):
         self.node = kwargs.get("node", "")
@@ -76,7 +48,7 @@ class Client:
 
 clients = []
 
-nodes = ["d430", "d710", "d820"]
+nodes = ["d430", "m510"]
 
 for i, node in enumerate(nodes):
     c = Client(node=node,
@@ -92,11 +64,13 @@ for client_config in clients:
     client.routable_control_ip = True
     ifaces.append(client.addInterface(client_config.iface_name,
                                       pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
-    client.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
+
+lan = request.LAN("lan")
+lan.bandwidth = params.bandwidth
 
 # Attach server to lan.
 for iface in ifaces:
-    nfsLan.addInterface(iface)
+    lan.addInterface(iface)
 
 # Print the RSpec to the enclosing page.
 pc.printRequestRSpec(request)
