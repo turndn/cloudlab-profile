@@ -1,8 +1,5 @@
 #! /bin/bash
 
-echo "setup nfs"
-/local/repository/setup_once.sh
-
 echo "start domain1"
 sudo virsh start domain1
 
