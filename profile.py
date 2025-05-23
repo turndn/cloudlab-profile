@@ -76,7 +76,7 @@ class Client:
 
 clients = []
 
-nodes = ["d430", "d710", "d820"]
+nodes = ["c220g1", "c220g2", "d430"]
 
 for i, node in enumerate(nodes):
     c = Client(node=node,
