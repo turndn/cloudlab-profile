@@ -69,7 +69,7 @@ for client_config in clients:
                                       pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
 
 lan = request.LAN("lan")
-# lan.bandwidth = 100000
+lan.bandwidth = 100000
 
 # Attach server to lan.
 for iface in ifaces:
