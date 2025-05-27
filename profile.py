@@ -48,7 +48,7 @@ clients = []
 nodes = [
     "c6220",
     "d710",
-    "r320",
+    # "r320",
 ]
 
 for i, node in enumerate(nodes):
