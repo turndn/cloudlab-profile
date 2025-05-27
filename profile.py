@@ -50,6 +50,7 @@ nodes = [
     "c6320",
     "c6420",
     "c8220",
+    "r650",
 ]
 
 for i, node in enumerate(nodes):
