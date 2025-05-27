@@ -1,5 +1,8 @@
 #! /bin/bash
 
+echo "provision sshkeys"
+/local/repository/provision_sshkeys.sh
+
 echo "start domain1"
 sudo virsh start domain1
 
