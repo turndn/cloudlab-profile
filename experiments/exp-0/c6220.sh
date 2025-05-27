@@ -1,7 +1,5 @@
 #! /bin/bash
 
-/local/repository/base.sh
-
 echo "Wait"
 read a
 /local/repository/migrate_libvirt.sh r320
