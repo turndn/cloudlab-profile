@@ -50,7 +50,6 @@ nodes = [
     "r320",
     "m510",
     "xl170",
-    "xl170",
 ]
 
 for i, node in enumerate(nodes):
@@ -60,10 +59,16 @@ for i, node in enumerate(nodes):
                ipaddr="192.168.6.{}".format(i + 3))
     clients.append(c)
 
+c = Client(node="xl170-base",
+           hardware_type="xl170",
+           iface_name="eth1",
+           ipaddr="192.168.6.{}".format(len(nodes) + 3))
+clients.append(c)
+
 for i, client_config in enumerate(clients):
     client = request.RawPC(client_config.node)
     client.disk_image = "urn:publicid:IDN+apt.emulab.net+image+dlock-PG0:migration-kvm.apt"
-    if i == len(nodes) - 1:
+    if i == len(clients) - 1:
         client.disk_image = params.osImage
     client.hardware_type = client_config.hardware_type
     client.routable_control_ip = True
