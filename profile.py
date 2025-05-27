@@ -46,8 +46,8 @@ class Client:
 clients = []
 
 nodes = [
-    "r320",
-    "c6220",
+    "m510",
+    "xl170",
     "c220g1",
     "c220g2",
     "c220g5",
