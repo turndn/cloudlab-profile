@@ -61,7 +61,10 @@ for i, node in enumerate(nodes):
 
 for client_config in clients:
     client = request.RawPC(client_config.node)
-    client.disk_image = params.osImage
+    if client_config.node in ["c6220", "r320"]:
+        client.disk_image = "urn:publicid:IDN+apt.emulab.net+image+dlock-PG0:migration-kvm.apt"
+    else:
+        client.disk_image = params.osImage
     client.hardware_type = client_config.hardware_type
     client.routable_control_ip = True
     ifaces.append(client.addInterface(client_config.iface_name,
