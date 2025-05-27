@@ -46,10 +46,11 @@ class Client:
 clients = []
 
 nodes = [
-    "c4130",
-    "c6320",
-    "c6420",
-    "c8220",
+    "c6220",
+    "r320",
+    "c220g1",
+    "c220g2",
+    "c220g5",
 ]
 
 for i, node in enumerate(nodes):
