@@ -59,7 +59,7 @@ lan.bandwidth = 100000
 lan.addInterface(nfs_server.addInterface('eth1',
                                          pg.IPv4Address("192.168.6.2", '255.255.255.0')))
 nfs_bs = nfs_server.Blockstore("nfsBS", "/nfs")
-nfs_bs.size = "10G"
+nfs_bs.size = "10GB"
 nfs_server.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
 
 nodes = [
