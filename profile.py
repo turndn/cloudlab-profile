@@ -45,6 +45,23 @@ class Client:
 
 clients = []
 
+# NFS server
+nfs_server = request.RawPC("nfs")
+nfs_server.disk_image = 'urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU20-64-STD'
+
+lan = request.LAN("nfsLan")
+lan.best_effort = True
+lan.vlan_tagging = True
+lan.link_multiplexing = True
+lan.bandwidth = 100000
+
+# Attach nfs server to lan
+lan.addInterface(nfs_server.addInterface('eth1',
+                                         pg.IPv4Address("192.168.6.2", '255.255.255.0')))
+nfs_bs = nfs_server.Blockstore("nfsBS", "/nfs")
+nfs_bs.size = "10G"
+nfs_server.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
+
 nodes = [
     "c220g2",
     "c220g5",
@@ -67,9 +84,7 @@ for client_config in clients:
     client.routable_control_ip = True
     ifaces.append(client.addInterface(client_config.iface_name,
                                       pg.IPv4Address(client_config.ipaddr, '255.255.255.0')))
-
-lan = request.LAN("lan")
-lan.bandwidth = 100000
+    client.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-client.sh"))
 
 # Attach server to lan.
 for iface in ifaces:
