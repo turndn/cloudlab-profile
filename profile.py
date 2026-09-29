@@ -63,13 +63,13 @@ nfs_bs.size = "10GB"
 nfs_server.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repository/nfs-server.sh"))
 
 nodes = [
-    "xl170",
-    "xl170",
+    ("xl170-0", "xl170"),
+    ("xl170-1", "xl170"),
 ]
 
 for i, node in enumerate(nodes):
-    c = Client(node=node,
-               hardware_type=node,
+    c = Client(node=node[0],
+               hardware_type=node[1],
                iface_name="eth1",
                ipaddr="192.168.6.{}".format(i + 3))
     clients.append(c)
