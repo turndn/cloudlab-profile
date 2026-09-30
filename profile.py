@@ -65,6 +65,7 @@ nfs_server.addService(pg.Execute(shell="sh", command="sudo /bin/bash /local/repo
 nodes = [
     ("server-0", "c220g2"),
     ("server-1", "c220g2"),
+    ("server-2", "c220g5"),
 ]
 
 for i, node in enumerate(nodes):
